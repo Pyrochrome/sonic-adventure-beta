@@ -614,7 +614,11 @@ void title_setup(void)
     NJS_POINT3 point;
 
     menu_begin();
+#ifdef GCC
+    title_debug = TRUE;
+#else
     title_debug = FALSE;
+#endif
     draw_off = TRUE;
     title_mode = TITLE_SHOW;
     heap_init();
@@ -1203,7 +1207,11 @@ static Sint16 title_debug_step(void)
             title_mode = TITLE_CARDS;
         } else if ((pad_held_live[0] & (PDD_DGT_TX | PDD_DGT_TY)) ==
                    (PDD_DGT_TX | PDD_DGT_TY)) {
+#ifdef GCC
+            title_mode = TITLE_DEBUG_STAGES;
+#else
             title_mode = TITLE_QUIT;
+#endif
         }
         title_draw_dim();
         break;

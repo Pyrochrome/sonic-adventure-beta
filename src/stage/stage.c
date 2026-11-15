@@ -3338,19 +3338,38 @@ void stage_place_player(struct task_work *work)
                 break;
             }
             for (;;) {
+#ifdef GCC
+
                 if (start->stage == stage_current &&
-                    start->act == act_current) {
-                    work->ang.y = start->ang_y;
-                    work->pos = start->pos;
-                    break;
+                start->act == act_current) {
+                work->ang.y = start->ang_y;
+                work->pos = start->pos;
+                break;
                 }
+
+                if (start->stage == STAGE_NONE &&
+                start != sonic_starts) {
+                    start = sonic_starts;
+                } else if (start->stage == STAGE_NONE && 
+                stage_current == STAGE_SHELTER) {
+                    start = amy_starts;
+                }
+#else
+                if (start->stage == stage_current &&
+                start->act == act_current) {
+                work->ang.y = start->ang_y;
+                work->pos = start->pos;
+                break;
+                }
+
                 if (start->stage == STAGE_NONE) {
-                    work->ang.y = 0;
-                    work->pos.x = 0.0F;
-                    work->pos.y = 0.0F;
-                    work->pos.z = 0.0F;
-                    break;
+                work->ang.y = 0;
+                work->pos.x = 0.0F;
+                work->pos.y = 0.0F;
+                work->pos.z = 0.0F;
+                break;
                 }
+#endif
                 start++;
             }
         }

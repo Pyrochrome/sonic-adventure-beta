@@ -164,21 +164,34 @@ int game_mode_step(void)
     case GAME_MODE_BOOT:
         boot_new_game();
         boot_init();
+#ifdef GCC
+        game_mode = GAME_MODE_TITLE;  //for debugging
+        boot_finish();
+        title_setup();
+#else
         game_mode = GAME_MODE_LOGO;
         boot_finish();
+#endif        
         break;
     case GAME_MODE_LOGO:
         result = logo_step();
         if (result == LOGO_ADVERTISE) {
+#ifdef GCC
+            menu_begin();
+            game_mode = GAME_MODE_TITLE;
+#else
+
             menu_begin();
             game_mode = GAME_MODE_MENU;
             menu_entrance = MENU_FROM_TOP;
+#endif
+
         } else if (result == LOGO_MOVIE) {
             movie_request = 0;
             game_mode = GAME_MODE_MOVIE;
         }
         break;
-    case GAME_MODE_TITLE:
+    case GAME_MODE_TITLE: 
         draw_off = FALSE;
         result = title_step();
         if (result == TITLE_PLAY) {
@@ -190,11 +203,14 @@ int game_mode_step(void)
                 game_mode = GAME_MODE_ACTION;
             }
             result = 0;
-        } else if (result == TITLE_STAGE_SELECT) {
+            }
+#ifndef GCC
+         else if (result == TITLE_STAGE_SELECT) {
             game_mode = GAME_MODE_STAGE_SELECT;
             result = 0;
             stage_select_start();
         }
+#endif
         pad_scan();
         pad_enable();
         break;
